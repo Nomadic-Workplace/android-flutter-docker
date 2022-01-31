@@ -10,16 +10,20 @@ RUN sudo gem install fastlane -NV
 # Install and pre-cache Flutter.
 ARG flutterVersion=stable
 
+WORKDIR /usr/local/bin
+
 ADD https://api.github.com/repos/flutter/flutter/compare/${flutterVersion}...${flutterVersion} /dev/null
 
-RUN git clone https://github.com/flutter/flutter.git -b ${flutterVersion} flutter-sdk
+RUN sudo git clone https://github.com/flutter/flutter.git -b ${flutterVersion} flutter
 
-RUN flutter-sdk/bin/flutter precache
+RUN sudo chown -R $(whoami) /usr/local/bin/flutter
 
-RUN flutter-sdk/bin/flutter config --no-analytics
+RUN flutter/bin/flutter precache
 
-ENV PATH="$PATH:/home/flutter/flutter-sdk/bin"
-ENV PATH="$PATH:/home/flutter/flutter-sdk/bin/cache/dart-sdk/bin"
+RUN flutter/bin/flutter config --no-analytics
+
+ENV PATH="/usr/local/bin/flutter/bin:${PATH}"
+ENV PATH="/usr/local/bin/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
 RUN flutter doctor
 
