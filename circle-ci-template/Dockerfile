@@ -1,4 +1,4 @@
-FROM cimg/android:2021.12.1
+FROM cimg/android:2022.01.1
 
 # Install and pre-cache Flutter.
 RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.8.0-stable.tar.xz && \
