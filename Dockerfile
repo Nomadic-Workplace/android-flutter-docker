@@ -8,12 +8,6 @@ RUN sudo apt-get install -y ruby ruby-dev rubygems
 RUN sudo gem install fastlane -NV
 
 # Install and pre-cache Flutter.
-RUN sudo groupadd -r -g 1441 flutter && sudo useradd --no-log-init -r -u 1441 -g flutter -m flutter
-
-USER flutter:flutter
-
-WORKDIR /home/flutter
-
 ARG flutterVersion=stable
 
 ADD https://api.github.com/repos/flutter/flutter/compare/${flutterVersion}...${flutterVersion} /dev/null
