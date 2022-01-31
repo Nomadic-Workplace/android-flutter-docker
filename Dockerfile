@@ -1,16 +1,31 @@
 FROM cimg/android:2022.01.1
 
-# Install and pre-cache Flutter.
-RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.8.0-stable.tar.xz && \
-  sudo tar xf flutter_linux_2.8.0-stable.tar.xz -C /usr/local/bin && \
-  rm flutter_linux_2.8.0-stable.tar.xz
-RUN sudo chown -R $(whoami) /usr/local/bin/flutter
+RUN sudo apt-get update && \
+    sudo apt-get install -y bash curl file git unzip xz-utils zip libglu1-mesa
 
-ENV PATH="/usr/local/bin/flutter/bin:${PATH}"
-
-RUN /usr/local/bin/flutter/bin/flutter precache --no-web --no-linux --no-windows --no-fuchsia --no-ios --no-macos
-
-RUN sudo apt update
-RUN sudo apt install -y ruby ruby-dev rubygems
 # Install fastlane.
+RUN sudo apt-get install -y ruby ruby-dev rubygems
 RUN sudo gem install fastlane -NV
+
+# Install and pre-cache Flutter.
+RUN sudo groupadd -r -g 1441 flutter && sudo useradd --no-log-init -r -u 1441 -g flutter -m flutter
+
+USER flutter:flutter
+
+WORKDIR /home/flutter
+
+ARG flutterVersion=stable
+
+ADD https://api.github.com/repos/flutter/flutter/compare/${flutterVersion}...${flutterVersion} /dev/null
+
+RUN git clone https://github.com/flutter/flutter.git -b ${flutterVersion} flutter-sdk
+
+RUN flutter-sdk/bin/flutter precache
+
+RUN flutter-sdk/bin/flutter config --no-analytics
+
+ENV PATH="$PATH:/home/flutter/flutter-sdk/bin"
+ENV PATH="$PATH:/home/flutter/flutter-sdk/bin/cache/dart-sdk/bin"
+
+RUN flutter doctor
+
