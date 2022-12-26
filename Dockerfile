@@ -1,4 +1,4 @@
-FROM cimg/android:2022.01.1
+FROM cimg/android:2022.12.1
 
 RUN sudo apt-get update && \
     sudo apt-get install -y bash curl file git unzip xz-utils zip libglu1-mesa
